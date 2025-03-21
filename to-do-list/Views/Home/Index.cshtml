@@ -1,0 +1,127 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container-geral">
+    <form class="container-tarefa uk-flex uk-flex-middle uk-flex-center uk-margin-medium-top">
+        <input name="Tarefa" class="uk-border-rounded uk-input uk-form-width-large" id="DescricaoTarefa" type="text"
+            placeholder="Adicionar nova tarefa..." aria-label="Large">
+        <div class="uk-margin-left">
+            <input type="checkbox" id="Urgente" name="Urgente" value="1">
+            <span class="uk-text-bold texto-urgente">Urgente</span>
+        </div>
+        <button class="uk-button uk-border-rounded uk-button-primary uk-margin-left" type="submit"
+            id="AdicionarTarefa">ADICIONAR</button>
+    </form>
+    <div class="minhas-tarefas-container uk-flex uk-flex-between uk-margin-small-top">
+        <span class="uk-text-bold uk-text-large">Minhas Tarefas</span>
+        <form class="uk-search uk-search-default">
+            <span uk-search-icon></span>
+            <input class="uk-search-input uk-border-rounded" type="search" placeholder="Pesquisar Tarefas"
+                aria-label="Search">
+        </form>
+    </div>
+    <div class="uk-margin-small-top botao-filtro">
+        <button class="padrao-botao ">
+            <span class="">Todas</span>
+        </button>
+        <button class="padrao-botao ">
+            <span class="">Pendentes</span>
+        </button>
+        <button class="padrao-botao ">
+            <span class="">Concluídas</span>
+        </button>
+        <button class="padrao-botao ">
+            <span class="">Urgentes</span>
+        </button>
+    </div>
+    <div>
+        <div class="tarefa-container uk-flex uk-flex-between uk-margin-small-top">
+            <div class="uk-flex uk-flex-middle">
+                <input class="uk-margin-left checkbox-customizado" type="checkbox" name="" id="">
+                <span class="texto-tarefa uk-margin-small-left">Tarefa Adicionada</span>
+            </div>
+            <button class="botao-excluir">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-trash-2 icone-lixeira">
+                    <path d="M3 6h18" />
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                    <line x1="10" x2="10" y1="11" y2="17" />
+                    <line x1="14" x2="14" y1="11" y2="17" />
+                </svg>
+            </button>
+        </div>
+        <div class="tarefa-urgente-container uk-flex uk-flex-between uk-margin-small-top">
+            <div class="uk-flex uk-flex-middle">
+                <input class="uk-margin-left checkbox-customizado" type="checkbox" name="" id="">
+                <span class="texto-tarefa uk-margin-small-left">Tarefa Adicionada</span>
+            </div>
+            <button class="botao-excluir">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-trash-2 icone-lixeira">
+                    <path d="M3 6h18" />
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                    <line x1="10" x2="10" y1="11" y2="17" />
+                    <line x1="14" x2="14" y1="11" y2="17" />
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('form').on('submit', function (e) {
+        e.preventDefault();
+    });
+
+    function cadastrarTarefa() {
+        var descricao = $('#DescricaoTarefa').val();
+        var urgente = $('#Urgente').is(':checked');
+        console.log("aquiiiii");
+
+        if (descricao.trim() === '') {
+            UIkit.notification({
+                message: 'Informe a tarefa!',
+                status: 'danger',
+                pos: 'top-center',
+                timeout: 1500
+            });
+            return;
+        }
+
+        const tarefa = {
+            Descricao: descricao,
+            Urgencia: urgente,
+            Concluida: false
+        };
+
+        $.ajax({
+            url: '@Url.Action("CriarTarefas", "Home")',
+            type: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(tarefa),
+            success: function () {
+                UIkit.notification({
+                    message: 'Tarefa adicionada com sucesso!',
+                    status: 'success',
+                    pos: 'top-center',
+                    timeout: 1500
+                });
+                window.location.reload();
+            },
+            error: function () {
+                UIkit.notification({
+                    message: 'Erro ao adicionar tarefa!',
+                    status: 'danger',
+                    pos: 'top-center',
+                    timeout: 1500
+                });
+            }
+        });
+    }
+
+</script>
