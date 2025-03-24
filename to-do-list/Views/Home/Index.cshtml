@@ -1,4 +1,6 @@
-﻿@{
+﻿@model IEnumerable<Tarefa>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -17,71 +19,58 @@
         <span class="uk-text-bold uk-text-large">Minhas Tarefas</span>
         <form class="uk-search uk-search-default">
             <span uk-search-icon></span>
-            <input class="uk-search-input uk-border-rounded" type="search" placeholder="Pesquisar Tarefas"
-                aria-label="Search">
+            <input class="uk-search-input uk-border-rounded" type="search" oninput="pesquisarTarefa()"
+                placeholder="Pesquisar Tarefas" id="DescricaoTarefaPesquisada" aria-label="Search">
         </form>
     </div>
     <div class="uk-margin-small-top botao-filtro">
-        <button class="padrao-botao ">
+        <button class="padrao-botao" onclick='mostrarTodasTarefas()'>
             <span class="">Todas</span>
         </button>
-        <button class="padrao-botao ">
+        <button class="padrao-botao" onclick="filtrarTarefasPendentes()">
             <span class="">Pendentes</span>
         </button>
-        <button class="padrao-botao ">
+        <button class="padrao-botao" onclick='filtrarTarefasConcluidas()'>
             <span class="">Concluídas</span>
         </button>
-        <button class="padrao-botao ">
+        <button class="padrao-botao" onclick='filtrarTarefasUrgentes()'>
             <span class="">Urgentes</span>
         </button>
     </div>
-    <div>
-        <div class="tarefa-container uk-flex uk-flex-between uk-margin-small-top">
-            <div class="uk-flex uk-flex-middle">
-                <input class="uk-margin-left checkbox-customizado" type="checkbox" name="" id="">
-                <span class="texto-tarefa uk-margin-small-left">Tarefa Adicionada</span>
-            </div>
-            <button class="botao-excluir">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="lucide lucide-trash-2 icone-lixeira">
-                    <path d="M3 6h18" />
-                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                    <line x1="10" x2="10" y1="11" y2="17" />
-                    <line x1="14" x2="14" y1="11" y2="17" />
-                </svg>
-            </button>
-        </div>
-        <div class="tarefa-urgente-container uk-flex uk-flex-between uk-margin-small-top">
-            <div class="uk-flex uk-flex-middle">
-                <input class="uk-margin-left checkbox-customizado" type="checkbox" name="" id="">
-                <span class="texto-tarefa uk-margin-small-left">Tarefa Adicionada</span>
-            </div>
-            <button class="botao-excluir">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="lucide lucide-trash-2 icone-lixeira">
-                    <path d="M3 6h18" />
-                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                    <line x1="10" x2="10" y1="11" y2="17" />
-                    <line x1="14" x2="14" y1="11" y2="17" />
-                </svg>
-            </button>
-        </div>
+    <div id="listaDeTarefas">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var tarefa in Model)
+            {
+                var classeTarefas = tarefa.Urgencia ? "tarefa-urgente-container" : "tarefa-container";
+
+                <div class="@classeTarefas uk-flex uk-flex-between uk-margin-small-top">
+                    <div class="uk-flex uk-flex-middle">
+                        <input class="uk-margin-left checkbox-customizado" type="checkbox" name="concluirTarefa"
+                            id="concluirTarefa"
+                            onchange="alternarConclusao('@Url.Action("AlternarConclusao", new { tarefaId = tarefa.TarefaId })')"
+                            @(tarefa.Concluida ? "checked" : "") />
+                        <span class="texto-tarefa uk-margin-small-left">@tarefa.Descricao</span>
+                    </div>
+                    <button class="botao-excluir"
+                        onclick="remover('@Url.Action("ApagarTarefa", new { tarefaId = @tarefa.TarefaId })', $(this).closest('.tarefa-container, .tarefa-urgente-container'))">
+                        <span class="uk-margin-small-right icone-lixeira" uk-icon="trash"></span>
+                    </button>
+                </div>
+            }
+        }
     </div>
 </div>
-
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
     $('form').on('submit', function (e) {
         e.preventDefault();
+        cadastrarTarefa();
     });
 
     function cadastrarTarefa() {
         var descricao = $('#DescricaoTarefa').val();
         var urgente = $('#Urgente').is(':checked');
-        console.log("aquiiiii");
 
         if (descricao.trim() === '') {
             UIkit.notification({
@@ -111,7 +100,10 @@
                     pos: 'top-center',
                     timeout: 1500
                 });
-                window.location.reload();
+
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
             },
             error: function () {
                 UIkit.notification({
@@ -124,4 +116,87 @@
         });
     }
 
+    function remover(url, elemento) {
+        $.post(url)
+            .done(function () {
+                elemento.remove();
+                UIkit.notification({
+                    message: 'Tarefa removida com sucesso!',
+                    status: 'success',
+                    pos: 'top-center',
+                    timeout: 1500
+                });
+            })
+            .fail(function () {
+                UIkit.notification({
+                    message: 'Erro ao remover tarefa!',
+                    status: 'danger',
+                    pos: 'top-center',
+                    timeout: 1500
+                });
+            });
+    }
+
+    function alternarConclusao(url) {
+        $.post(url)
+            .done(function () {
+                UIkit.notification({
+                    message: 'Estado da tarefa alternado com sucesso!',
+                    status: 'success',
+                    pos: 'top-center',
+                    timeout: 1500
+                });
+            })
+            .fail(function () {
+                UIkit.notification({
+                    message: 'Erro ao concluir tarefa!',
+                    status: 'danger',
+                    pos: 'top-center',
+                    timeout: 1500
+                });
+            });
+    }
+
+    function filtrarTarefasUrgentes() {
+        $('.tarefa-container').hide();
+        $('.tarefa-urgente-container').show();
+    }
+
+    function mostrarTodasTarefas() {
+        $('.tarefa-container, .tarefa-urgente-container').show();
+    }
+
+    function filtrarTarefasConcluidas() {
+        $('.tarefa-container, .tarefa-urgente-container').each(function () {
+            if ($(this).find('input[type="checkbox"]').is(':checked')) {
+                $(this).css('display', 'flex');
+            } else {
+                $(this).hide();
+            }
+        });
+    }
+
+    function filtrarTarefasPendentes() {
+        $('.tarefa-container, .tarefa-urgente-container').each(function () {
+            if ($(this).find('input[type="checkbox"]').is(':checked')) {
+                $(this).hide();
+            } else {
+                $(this).css('display', 'flex');
+            }
+        });
+    }
+
+    function pesquisarTarefa() {
+        var tarefaPesquisada = $('#DescricaoTarefaPesquisada').val().toLowerCase();
+
+        $('.tarefa-container, .tarefa-urgente-container').each(function () {
+            var descricaoTarefa = $(this).find('.texto-tarefa').text().toLowerCase();
+
+            if (descricaoTarefa.includes(tarefaPesquisada)) {
+                $(this).css('display', 'flex');
+            } else {
+                $(this).hide();
+            }
+        });
+    }
 </script>

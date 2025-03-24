@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using to_do_list.Models;
 using to_do_list.Repository;
@@ -13,9 +14,11 @@ public class HomeController : Controller
     {
         _tarefaRepository = tarefaRepository;
     }
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
+        var tarefas = await _tarefaRepository.ListarTarefas();
+
+        return View(tarefas);
     }
 
     [HttpPost]
@@ -24,6 +27,21 @@ public class HomeController : Controller
             
             await _tarefaRepository.CriarTarefa(tarefa);
             return Ok();
+    }
+
+    [HttpPost("{tarefaId}/remover")]
+
+    public async Task<IActionResult> ApagarTarefa(int TarefaId)
+    {
+        var tarefa = await _tarefaRepository.ApagarTarefa(TarefaId);
+        return Ok(tarefa);
+    }
+
+    [HttpPost("{tarefaId}/alternar-conclusao")]
+    public async Task<IActionResult> AlternarConclusao(int tarefaId)
+    {
+        var tarefa = await _tarefaRepository.AlternarConclusao(tarefaId);
+        return Ok(tarefa);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
