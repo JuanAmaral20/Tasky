@@ -52,10 +52,31 @@
                             @(tarefa.Concluida ? "checked" : "") />
                         <span class="texto-tarefa uk-margin-small-left">@tarefa.Descricao</span>
                     </div>
-                    <button class="botao-excluir"
-                        onclick="remover('@Url.Action("ApagarTarefa", new { tarefaId = @tarefa.TarefaId })', $(this).closest('.tarefa-container, .tarefa-urgente-container'))">
-                        <span class="uk-margin-small-right icone-lixeira" uk-icon="trash"></span>
-                    </button>
+                    <div class="uk-flex uk-flex-middle">
+                        <button class="uk-margin-small-right icone-editar" type="button" uk-toggle="target: #modal-example"
+                            uk-icon="pencil"></button>
+                        <div id="modal-example" uk-modal>
+                            <div class="uk-modal-dialog uk-modal-body">
+                                <h2 class="uk-modal-title">Editar tarefa</h2>
+                                <form>
+                                    <div class="uk-margin">
+                                        <input class="uk-input uk-form-width-medium" type="text" value="@tarefa.Descricao">
+                                        <input type="checkbox" id="Urgente" name="Urgente" @(tarefa.Urgencia ? "checked" : "")>
+                                        <span class="uk-text-bold texto-urgente">Urgente</span>
+                                    </div>
+                                    <div class="uk-flex uk-flex-middle botoes-acoes-editar">
+                                        <button class="uk-button uk-button-default uk-modal-close"
+                                            type="button">Cancelar</button>
+                                        <button class="uk-button uk-button-primary" type="button">Salvar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <button class="botao-excluir"
+                            onclick="remover('@Url.Action("ApagarTarefa", new { tarefaId = @tarefa.TarefaId })', $(this).closest('.tarefa-container, .tarefa-urgente-container'))">
+                            <span class="uk-margin-small-right icone-lixeira" uk-icon="trash"></span>
+                        </button>
+                    </div>
                 </div>
             }
         }

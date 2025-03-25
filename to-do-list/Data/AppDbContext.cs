@@ -13,7 +13,6 @@ namespace to_do_list.Data
         {
 
         }
-
         public DbSet<Tarefa> Tarefas { get; set; }
     }
 }
