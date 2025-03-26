@@ -44,6 +44,13 @@ public class HomeController : Controller
         return Ok(tarefa);
     }
 
+    [HttpPost("{tarefaId}/editar")]
+    public async Task<IActionResult> EditarTarefa(int tarefaId, Tarefa tarefa)
+    {
+        await _tarefaRepository.EditarTarefa(tarefaId, tarefa);
+        return Ok();
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

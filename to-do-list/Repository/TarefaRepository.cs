@@ -50,5 +50,14 @@ namespace to_do_list.Repository
 
             return tarefa;
         }
+        public async Task EditarTarefa(int tarefaId, Tarefa tarefa)
+        {
+            var tarefaDb = await _context.Tarefas.FindAsync(tarefaId);
+            tarefaDb.Descricao = tarefa.Descricao;
+            tarefaDb.Urgencia = tarefa.Urgencia;
+
+            _context.Tarefas.Update(tarefaDb);
+            await _context.SaveChangesAsync();
+        }
     }
 }
