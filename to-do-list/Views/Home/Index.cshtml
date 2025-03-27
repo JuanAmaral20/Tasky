@@ -56,20 +56,20 @@
                         <button class="uk-margin-small-right icone-editar" type="button"
                             uk-toggle="target: #modal-example-@tarefa.TarefaId" uk-icon="pencil"></button>
                         <div id="modal-example-@tarefa.TarefaId" uk-modal>
-                            <div class="uk-modal-dialog uk-modal-body">
+                            <div class="uk-modal-dialog uk-modal-body uk-border-rounded">
                                 <h2 class="uk-modal-title">Editar tarefa</h2>
                                 <form>
-                                    <div class="uk-margin">
-                                        <input class="uk-input uk-form-width-medium" type="text" value="@tarefa.Descricao"
+                                    <div class="uk-margin uk-flex uk-flex-middle">
+                                        <input class="uk-border-rounded uk-input uk-form-width-large" type="text" value="@tarefa.Descricao"
                                             id="DescricaoTarefa-@tarefa.TarefaId">
-                                        <input type="checkbox" id="Urgente-@tarefa.TarefaId" name="Urgente" @(tarefa.Urgencia ?
+                                        <input class="uk-margin-small-left" type="checkbox" id="Urgente-@tarefa.TarefaId" name="Urgente" @(tarefa.Urgencia ?
                                             "checked" : "")>
                                     <span class="uk-text-bold texto-urgente">Urgente</span>
                                 </div>
                                 <div class="uk-flex uk-flex-middle botoes-acoes-editar">
-                                    <button class="uk-button uk-button-default uk-modal-close"
+                                    <button class="uk-button uk-border-rounded uk-button-default uk-modal-close"
                                         type="button">Cancelar</button>
-                                    <button class="uk-button uk-button-primary"
+                                    <button class="uk-button uk-border-rounded uk-button-primary"
                                         onclick="atualizarTarefa('@Url.Action("EditarTarefa", "Home", new { tarefaId = tarefa.TarefaId })', @tarefa.TarefaId)"
                                         type="button">Salvar</button>
                                 </div>
@@ -105,8 +105,29 @@
                 timeout: 1500
             });
             return;
-        }
+        } 
 
+        var descricaoExiste = false;
+
+        $('.tarefa-container, .tarefa-urgente-container').each(function () {
+        var descricaoTarefa = $(this).find('.texto-tarefa').text().trim().toLowerCase();
+        var tarefaConcluida = $(this).find('input[name="concluirTarefa"]').is(':checked');
+
+        if (descricaoTarefa === descricao.toLowerCase() && !tarefaConcluida) {
+            descricaoExiste = true;
+            return false; 
+            }
+        });
+
+        if(descricaoExiste) {
+            UIkit.notification({
+                message: 'Já existe uma tarefa PENDENTE com essa descrição!',
+                status: 'danger',
+                pos: 'top-center',
+                timeout: 1500
+            });
+            return;
+        } 
         const tarefa = {
             Descricao: descricao,
             Urgencia: urgente,

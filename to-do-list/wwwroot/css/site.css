@@ -63,7 +63,7 @@ footer {
 
 .padrao-botao {
   background-color: #e9f0f7;
-  color: balack;
+  color: black;
   width: 105px;
   border: none;
   border-radius: 30px;
@@ -80,12 +80,13 @@ footer {
 #listaDeTarefas {
   max-height: 250px;
   overflow-y: auto;
-  padding-right: 20px;
+  max-width: 810px;
+  padding-right: 30px;
   overflow-x: hidden;
 }
 
 .tarefa-container {
-  width: 770px;
+  width: 790px;
   gap: 10px;
   border-left: 5px solid #ffffff;
   background-color: #ffffff;
@@ -95,12 +96,12 @@ footer {
 
 .tarefa-container:hover {
   box-shadow: 10px 5px 5px rgba(0, 0, 0, 0.2);
-  transform: scale(1.04);
+  transform: scale(1.01);
   transition-duration: 0.2s;
 }
 
 .tarefa-urgente-container {
-  width: 770px;
+  width: 790px;
   gap: 10px;
   border-left: 5px solid #ff3b30;
   background-color: #ffffff;
@@ -110,7 +111,7 @@ footer {
 
 .tarefa-urgente-container:hover {
   box-shadow: 10px 5px 5px rgba(0, 0, 0, 0.2);
-  transform: scale(1.04);
+  transform: scale(1.01);
   transition-duration: 0.2s;
 }
 
